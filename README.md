@@ -1,5 +1,5 @@
-![.NET Core](https://github.com/aimenux/sWebJobDemo/workflows/.NET%20Core/badge.svg)
-# sWebJobDemo
+![.NET Core](https://github.com/aimenux/WebJobDemo/workflows/.NET%20Core/badge.svg)
+# WebJobDemo
 ```
 Demo for webjob sdk v3
 ```
