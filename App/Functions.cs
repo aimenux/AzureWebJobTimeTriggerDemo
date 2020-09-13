@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Lib.Proxies;
 using Microsoft.Azure.WebJobs;
@@ -10,7 +11,8 @@ namespace App
 {
     public class Functions
     {
-        private const string CronExpression = "*/5 * * * * *";
+        private const string TimeoutExpression = "00:00:30";
+        private const string ScheduleExpression = "*/5 * * * * *";
 
         private readonly IApiProxy _apiProxy;
 
@@ -19,7 +21,13 @@ namespace App
             _apiProxy = apiProxy;
         }
 
-        public async Task RunAsync([TimerTrigger(CronExpression, RunOnStartup = true)] TimerInfo timer, ILogger logger)
+        [Singleton]
+        [Timeout(TimeoutExpression)]
+        public async Task RunAsync(
+            [TimerTrigger(ScheduleExpression, RunOnStartup = true)]
+            TimerInfo timer,
+            CancellationToken cancellationToken,
+            ILogger logger)
         {
             var data = await _apiProxy.GetRandomDataAsync();
             var json = GetFormattedJson(data);
