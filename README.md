@@ -1,4 +1,5 @@
-![.NET Core](https://github.com/aimenux/WebJobDemo/workflows/.NET%20Core/badge.svg)
+[![.NET](https://github.com/aimenux/WebJobDemo/actions/workflows/ci.yml/badge.svg)](https://github.com/aimenux/WebJobDemo/actions/workflows/ci.yml)
+
 # WebJobDemo
 ```
 Demo for webjobs v3
