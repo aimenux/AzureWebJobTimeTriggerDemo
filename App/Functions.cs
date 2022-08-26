@@ -11,6 +11,7 @@ namespace App
 {
     public class Functions
     {
+        private const string FunctionName = "WebJobDemo";
         private const string TimeoutExpression = "00:00:30";
         private const string ScheduleExpression = "*/5 * * * * *";
 
@@ -18,18 +19,19 @@ namespace App
 
         public Functions(IApiProxy apiProxy)
         {
-            _apiProxy = apiProxy;
+            _apiProxy = apiProxy ?? throw new ArgumentNullException(nameof(apiProxy));
         }
 
         [Singleton]
         [Timeout(TimeoutExpression)]
+        [FunctionName(FunctionName)]
         public async Task RunAsync(
             [TimerTrigger(ScheduleExpression, RunOnStartup = true)]
             TimerInfo timer,
             CancellationToken cancellationToken,
             ILogger logger)
         {
-            var data = await _apiProxy.GetRandomDataAsync();
+            var data = await _apiProxy.GetRandomDataAsync(cancellationToken);
             var json = GetFormattedJson(data);
             var now = DateTime.Now;
             logger.LogInformation("Found result at {now}: {json}", now, json);

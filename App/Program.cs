@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
+using App.Extensions;
 using Lib.Configuration;
 using Lib.Proxies;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace App
@@ -14,62 +14,39 @@ namespace App
     {
         public static async Task Main(string[] args)
         {
-            var hostBuilder = new HostBuilder();
-            hostBuilder
+            using var host = CreateHostBuilder(args).Build();
+            await host.RunAsync();
+        }
+
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
                 .ConfigureWebJobs(builder =>
                 {
                     builder.AddAzureStorageCoreServices();
-                    builder.AddAzureStorage();
                     builder.AddTimers();
                 })
-                .ConfigureAppConfiguration(builder =>
+                .ConfigureAppConfiguration((_, config) =>
                 {
-                    builder.AddCommandLine(args);
-                    builder.AddEnvironmentVariables();
-                    var environment = Environment.GetEnvironmentVariable("ENVIRONMENT") ?? "DEV";
-                    builder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-                    builder.AddJsonFile($"appsettings.{environment}.json", optional: false, reloadOnChange: true);
+                    config.AddJsonFile();
+                    config.AddUserSecrets();
+                    config.AddEnvironmentVariables();
+                    config.AddCommandLine(args);
                 })
-                .ConfigureLogging((context, builder) =>
+                .ConfigureLogging((hostingContext, loggingBuilder) =>
                 {
-                    builder.AddNonGenericLogger();
-                    builder.AddConsole(options =>
-                    {
-                        options.DisableColors = false;
-                        options.TimestampFormat = "[HH:mm:ss:fff] ";
-                    });
-                    builder.AddConfiguration(context.Configuration.GetSection("Logging"));
-                    var instrumentationKey = context.Configuration["Settings:ApplicationInsights:InstrumentationKey"];
-                    builder.AddApplicationInsightsWebJobs(options => options.InstrumentationKey = instrumentationKey);
+                    loggingBuilder.AddLogging(hostingContext.Configuration);
                 })
-                .ConfigureServices((context, services) =>
+                .ConfigureServices((hostingContext, services) =>
                 {
-                    services.Configure<Settings>(context.Configuration.GetSection(nameof(Settings)));
+                    services.Configure<Settings>(hostingContext.Configuration.GetSection("Settings"));
                     services.AddHttpClient<IApiProxy, ApiProxy>()
                         .ConfigureHttpClient((provider, client) =>
                         {
-                            var settings = provider.GetService<IOptions<Settings>>().Value;
-                            var baseAddress = settings.ExternalApi.BaseAddress;
+                            var options = provider.GetRequiredService<IOptions<Settings>>();
+                            var baseAddress = options.Value.ExternalApi.BaseAddress;
                             client.BaseAddress = new Uri(baseAddress);
                             client.DefaultRequestHeaders.Add("Accept", "application/json");
                         });
                 });
-
-            var host = hostBuilder.Build();
-            using (host)
-            {
-                await host.RunAsync();
-            }
-        }
-
-        private static void AddNonGenericLogger(this ILoggingBuilder loggingBuilder)
-        {
-            var services = loggingBuilder.Services;
-            services.AddSingleton(serviceProvider =>
-            {
-                var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-                return loggerFactory.CreateLogger("ContinuousWebJobDemo");
-            });
-        }
     }
 }
