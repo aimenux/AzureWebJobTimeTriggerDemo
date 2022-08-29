@@ -38,12 +38,12 @@ namespace App
                 })
                 .ConfigureServices((hostingContext, services) =>
                 {
-                    services.Configure<Settings>(hostingContext.Configuration.GetSection("Settings"));
+                    services.Configure<ExternalApi>(hostingContext.Configuration.GetSection("ExternalApi"));
                     services.AddHttpClient<IApiProxy, ApiProxy>()
                         .ConfigureHttpClient((provider, client) =>
                         {
-                            var options = provider.GetRequiredService<IOptions<Settings>>();
-                            var baseAddress = options.Value.ExternalApi.BaseAddress;
+                            var options = provider.GetRequiredService<IOptions<ExternalApi>>();
+                            var baseAddress = options.Value.BaseAddress;
                             client.BaseAddress = new Uri(baseAddress);
                             client.DefaultRequestHeaders.Add("Accept", "application/json");
                         });

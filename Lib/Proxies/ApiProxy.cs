@@ -14,11 +14,11 @@ namespace Lib.Proxies
         private readonly HttpClient _client;
         private readonly ILogger _logger;
 
-        public ApiProxy(HttpClient client, IOptions<Settings> options, ILogger logger)
+        public ApiProxy(HttpClient client, IOptions<ExternalApi> options, ILogger logger)
         {
             _client = client ?? throw new ArgumentNullException(nameof(client));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _queryString = options.Value.ExternalApi.QueryString;
+            _queryString = options.Value.QueryString;
             _logger.LogInformation("Call to ApiProxy ctor at {now}", DateTime.Now);
         }
 

@@ -13,7 +13,7 @@ namespace App
     {
         private const string FunctionName = "WebJobDemo";
         private const string TimeoutExpression = "00:00:30";
-        private const string ScheduleExpression = "*/5 * * * * *";
+        private const string ScheduleExpression = "*/5 * * * *";
 
         private readonly IApiProxy _apiProxy;
 
