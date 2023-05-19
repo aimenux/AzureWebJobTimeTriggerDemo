@@ -1,4 +1,4 @@
-[![.NET](https://github.com/aimenux/WebJobDemo/actions/workflows/ci.yml/badge.svg)](https://github.com/aimenux/WebJobDemo/actions/workflows/ci.yml)
+[![.NET](https://github.com/aimenux/AzureWebJobTimeTriggerDemo/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/aimenux/AzureWebJobTimeTriggerDemo/actions/workflows/ci.yml)
 
 # AzureWebJobTimeTriggerDemo
 ```
