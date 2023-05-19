@@ -1,6 +1,6 @@
 [![.NET](https://github.com/aimenux/WebJobDemo/actions/workflows/ci.yml/badge.svg)](https://github.com/aimenux/WebJobDemo/actions/workflows/ci.yml)
 
-# WebJobDemo
+# TimeTriggerAzureWebJobDemo
 ```
 Demo for webjobs v3
 ```
